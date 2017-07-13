@@ -42,8 +42,19 @@ GitHub：
 Github:
 MM是一个模块化高度集成的魔镜项目，已经运营数年。客制化程度非常高。
 
+初次安装仅需要一行命令：
+`curl -sL https://raw.githubusercontent.com/MichMich/MagicMirror/master/installers/raspberry.sh | bash`
+
+由于需要electron模块，国内访问很慢，建议使用手动安装进行至最后一步`npm install`改用`cnpm install`进行。
+
+cnpm安装请使用` npm install -g cnpm --registry=https://registry.npm.taobao.org`
+
+环境安装完成后，可以尽情安装所需模块，在这里推荐：
+空气指数、iFrame（用来显示HA界面）
+
+
 文件清单：
-.css 
+.css 黑色背景的Homeassistant界面，以配合魔镜整体环境。
 
 
 
