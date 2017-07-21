@@ -5913,7 +5913,7 @@
         <style is="custom-style">html{--paper-font-common-base:{font-family:Roboto,Noto,sans-serif;-webkit-font-smoothing:antialiased};--paper-font-common-code:{font-family:'Roboto Mono',Consolas,Menlo,monospace;-webkit-font-smoothing:antialiased};--paper-font-common-expensive-kerning:{text-rendering:optimizeLegibility};--paper-font-common-nowrap:{white-space:nowrap;overflow:hidden;text-overflow:ellipsis};--paper-font-display4:{@apply --paper-font-common-base;@apply --paper-font-common-nowrap;font-size:112px;font-weight:300;letter-spacing:-.044em;line-height:120px};--paper-font-display3:{@apply --paper-font-common-base;@apply --paper-font-common-nowrap;font-size:56px;font-weight:400;letter-spacing:-.026em;line-height:60px};--paper-font-display2:{@apply --paper-font-common-base;font-size:45px;font-weight:400;letter-spacing:-.018em;line-height:48px};--paper-font-display1:{@apply --paper-font-common-base;font-size:34px;font-weight:400;letter-spacing:-.01em;line-height:40px};--paper-font-headline:{@apply --paper-font-common-base;font-size:24px;font-weight:400;letter-spacing:-.012em;line-height:32px};--paper-font-title:{@apply --paper-font-common-base;@apply --paper-font-common-nowrap;font-size:20px;font-weight:500;line-height:28px};--paper-font-subhead:{@apply --paper-font-common-base;font-size:16px;font-weight:400;line-height:24px};--paper-font-body2:{@apply --paper-font-common-base;font-size:14px;font-weight:500;line-height:24px};--paper-font-body1:{@apply --paper-font-common-base;font-size:14px;font-weight:400;line-height:20px};--paper-font-caption:{@apply --paper-font-common-base;@apply --paper-font-common-nowrap;font-size:12px;font-weight:400;letter-spacing:.011em;line-height:20px};--paper-font-menu:{@apply --paper-font-common-base;@apply --paper-font-common-nowrap;font-size:13px;font-weight:500;line-height:24px};--paper-font-button:{@apply --paper-font-common-base;@apply --paper-font-common-nowrap;font-size:14px;font-weight:500;letter-spacing:.018em;line-height:24px;text-transform:uppercase};--paper-font-code2:{@apply --paper-font-common-code;font-size:14px;font-weight:700;line-height:20px};--paper-font-code1:{@apply --paper-font-common-code;font-size:14px;font-weight:500;line-height:20px};}</style></custom-style>
       <dom-module id="iron-flex" assetpath="../bower_components/iron-flex-layout/">
         <template>
-          <style>.layout.horizontal,.layout.vertical{display:-ms-flexbox;display:-webkit-flex;display:flex}.layout.inline{display:-ms-inline-flexbox;display:-webkit-inline-flex;display:inline-flex}.layout.horizontal{-ms-flex-direction:row;-webkit-flex-direction:row;flex-direction:row}.layout.vertical{-ms-flex-direction:column;-webkit-flex-direction:column;flex-direction:column}.layout.wrap{-ms-flex-wrap:wrap;-webkit-flex-wrap:wrap;flex-wrap:wrap}.layout.no-wrap{-ms-flex-wrap:nowrap;-webkit-flex-wrap:nowrap;flex-wrap:nowrap}.layout.center,.layout.center-center{-ms-flex-align:center;-webkit-align-items:center;align-items:center;background-color: black;color: white}.layout.center-center,.layout.center-justified{-ms-flex-pack:center;-webkit-justify-content:center;justify-content:center}.flex{-ms-flex:1 1 .000000001px;-webkit-flex:1;flex:1;-webkit-flex-basis:.000000001px;flex-basis:.000000001px}.flex-auto{-ms-flex:1 1 auto;-webkit-flex:1 1 auto;flex:1 1 auto}.flex-none{-ms-flex:none;-webkit-flex:none;flex:none}</style></template>
+          <style>.layout.horizontal,.layout.vertical{display:-ms-flexbox;display:-webkit-flex;display:flex}.layout.inline{display:-ms-inline-flexbox;display:-webkit-inline-flex;display:inline-flex}.layout.horizontal{-ms-flex-direction:row;-webkit-flex-direction:row;flex-direction:row}.layout.vertical{-ms-flex-direction:column;-webkit-flex-direction:column;flex-direction:column}.layout.wrap{-ms-flex-wrap:wrap;-webkit-flex-wrap:wrap;flex-wrap:wrap}.layout.no-wrap{-ms-flex-wrap:nowrap;-webkit-flex-wrap:nowrap;flex-wrap:nowrap}.layout.center,.layout.center-center{-ms-flex-align:center;-webkit-align-items:center;align-items:center}.layout.center-center,.layout.center-justified{-ms-flex-pack:center;-webkit-justify-content:center;justify-content:center}.flex{-ms-flex:1 1 .000000001px;-webkit-flex:1;flex:1;-webkit-flex-basis:.000000001px;flex-basis:.000000001px}.flex-auto{-ms-flex:1 1 auto;-webkit-flex:1 1 auto;flex:1 1 auto}.flex-none{-ms-flex:none;-webkit-flex:none;flex:none}</style></template>
       </dom-module>
       <dom-module id="iron-flex-reverse" assetpath="../bower_components/iron-flex-layout/">
         <template>
@@ -8575,10 +8575,22 @@
           return e._stateDisplay
         },
         window.hassUtil.isComponentLoaded = function(e, t) {
-          return - 1 !== e.config.core.components.indexOf(t)
+          return e && -1 !== e.config.core.components.indexOf(t)
         },
         window.hassUtil.computeLocationName = function(e) {
-          return e.config.core.location_name
+          return e && e.config.core.location_name
+        },
+        window.hassUtil.applyThemesOnElement = function(e, t) {
+          if (e._themes || (e._themes = {}), "default" === t.default_theme) return void e.updateStyles(e._themes);
+          var i = t.themes[t.default_theme],
+          a = Object.assign({},
+          e._themes);
+          Object.keys(i).forEach(function(t) {
+            var n = "--" + t;
+            e._themes[n] = "",
+            a[n] = i[t]
+          }),
+          e.updateStyles(a)
         }</script>
       <script>!
         function() {
@@ -8683,10 +8695,8 @@
             set value(t) {
               var n = this.type,
               i = this.key;
-              if (n && i) {
-                var n = e.types[n] = e.types[n] || {};
-                null == t ? delete n[i] : n[i] = t
-              }
+              n && i && (n = e.types[n] = e.types[n] || {},
+              null == t ? delete n[i] : n[i] = t)
             },
             get list() {
               if (this.type) return Object.keys(e.types[this.type]).map(function(e) {
@@ -10011,7 +10021,7 @@
           },
           _focusBlurHandler: function(e) {
             Polymer.IronControlState._focusBlurHandler.call(this, e),
-            this.focused && !this._shiftTabPressed && this._focusableElement && (this._focusableElement.focus(), this._focusableElement.select && this._focusableElement.select())
+            this.focused && !this._shiftTabPressed && this._focusableElement && this._focusableElement.focus()
           },
           _onShiftTabDown: function(e) {
             var t = this.getAttribute("tabindex");
@@ -10328,7 +10338,7 @@
             n = Polymer.DomModule.import("paper-input", "template"),
             i = Polymer.DomModule.import("paper-input", "template#" + t),
             o = n.content.querySelector("#template-placeholder");
-            o.parentNode.replaceChild(i.content, o)
+            o && o.parentNode.replaceChild(i.content, o)
           },
           get _focusableElement() {
             return Polymer.Element ? this.inputElement._inputElement: this.inputElement
@@ -10801,20 +10811,7 @@
             this._boundNotifyResize = this.notifyResize.bind(this)
           },
           attached: function() {
-            if ("loading" === document.readyState) {
-              var e = this;
-              return void document.addEventListener("readystatechange",
-              function i() {
-                document.removeEventListener("readystatechange", i),
-                e.isAttached && e.attached()
-              })
-            }
-            this.fire("iron-request-resize-notifications", null, {
-              node: this,
-              bubbles: !0,
-              cancelable: !0
-            }),
-            this._parentResizable || (window.addEventListener("resize", this._boundNotifyResize), this.notifyResize())
+            this._requestResizeNotifications()
           },
           detached: function() {
             this._parentResizable ? this._parentResizable.stopResizeNotificationsFor(this) : window.removeEventListener("resize", this._boundNotifyResize),
@@ -10855,6 +10852,21 @@
           },
           _notifyDescendant: function(e) {
             this.isAttached && (this._notifyingDescendant = !0, e.notifyResize(), this._notifyingDescendant = !1)
+          },
+          _requestResizeNotifications: function() {
+            if (this.isAttached) if ("loading" === document.readyState) {
+              var e = this._requestResizeNotifications.bind(this);
+              document.addEventListener("readystatechange",
+              function i() {
+                document.removeEventListener("readystatechange", i),
+                e()
+              })
+            } else this.fire("iron-request-resize-notifications", null, {
+              node: this,
+              bubbles: !0,
+              cancelable: !0
+            }),
+            this._parentResizable || (window.addEventListener("resize", this._boundNotifyResize), this.notifyResize())
           }
         }</script>
       <dom-module id="paper-drawer-panel" assetpath="../bower_components/paper-drawer-panel/">
@@ -11150,6 +11162,457 @@
               this.async(this.notifyResize)
             }
           })</script>
+      </dom-module>
+      <script>!
+        function() {
+          "use strict";
+          Polymer({
+            is: "app-route",
+            properties: {
+              route: {
+                type: Object,
+                notify: !0
+              },
+              pattern: {
+                type: String
+              },
+              data: {
+                type: Object,
+                value: function() {
+                  return {}
+                },
+                notify: !0
+              },
+              queryParams: {
+                type: Object,
+                value: function() {
+                  return {}
+                },
+                notify: !0
+              },
+              tail: {
+                type: Object,
+                value: function() {
+                  return {
+                    path: null,
+                    prefix: null,
+                    __queryParams: null
+                  }
+                },
+                notify: !0
+              },
+              active: {
+                type: Boolean,
+                notify: !0,
+                readOnly: !0
+              },
+              _queryParamsUpdating: {
+                type: Boolean,
+                value: !1
+              },
+              _matched: {
+                type: String,
+                value: ""
+              }
+            },
+            observers: ["__tryToMatch(route.path, pattern)", "__updatePathOnDataChange(data.*)", "__tailPathChanged(tail.path)", "__routeQueryParamsChanged(route.__queryParams)", "__tailQueryParamsChanged(tail.__queryParams)", "__queryParamsChanged(queryParams.*)"],
+            created: function() {
+              this.linkPaths("route.__queryParams", "tail.__queryParams"),
+              this.linkPaths("tail.__queryParams", "route.__queryParams")
+            },
+            __routeQueryParamsChanged: function(t) {
+              if (t && this.tail) {
+                if (this.tail.__queryParams !== t && this.set("tail.__queryParams", t), !this.active || this._queryParamsUpdating) return;
+                var a = {},
+                i = !1;
+                for (var e in t) a[e] = t[e],
+                !i && this.queryParams && t[e] === this.queryParams[e] || (i = !0);
+                for (var e in this.queryParams) if (i || !(e in t)) {
+                  i = !0;
+                  break
+                }
+                if (!i) return;
+                this._queryParamsUpdating = !0,
+                this.set("queryParams", a),
+                this._queryParamsUpdating = !1
+              }
+            },
+            __tailQueryParamsChanged: function(t) {
+              t && this.route && this.route.__queryParams != t && this.set("route.__queryParams", t)
+            },
+            __queryParamsChanged: function(t) {
+              this.active && !this._queryParamsUpdating && this.set("route.__" + t.path, t.value)
+            },
+            __resetProperties: function() {
+              this._setActive(!1),
+              this._matched = null
+            },
+            __tryToMatch: function() {
+              if (this.route) {
+                var t = this.route.path,
+                a = this.pattern;
+                if (a) {
+                  if (!t) return void this.__resetProperties();
+                  for (var i = t.split("/"), e = a.split("/"), r = [], s = {},
+                  h = 0; h < e.length; h++) {
+                    var n = e[h];
+                    if (!n && "" !== n) break;
+                    var u = i.shift();
+                    if (!u && "" !== u) return void this.__resetProperties();
+                    if (r.push(u), ":" == n.charAt(0)) s[n.slice(1)] = u;
+                    else if (n !== u) return void this.__resetProperties()
+                  }
+                  this._matched = r.join("/");
+                  var _ = {};
+                  this.active || (_.active = !0);
+                  var o = this.route.prefix + this._matched,
+                  l = i.join("/");
+                  i.length > 0 && (l = "/" + l),
+                  this.tail && this.tail.prefix === o && this.tail.path === l || (_.tail = {
+                    prefix: o,
+                    path: l,
+                    __queryParams: this.route.__queryParams
+                  }),
+                  _.data = s,
+                  this._dataInUrl = {};
+                  for (var p in s) this._dataInUrl[p] = s[p];
+                  this.setProperties ? (this.active || this._setActive(!0), this.setProperties(_)) : this.__setMulti(_)
+                }
+              }
+            },
+            __tailPathChanged: function(t) {
+              if (this.active) {
+                var a = t,
+                i = this._matched;
+                a && ("/" !== a.charAt(0) && (a = "/" + a), i += a),
+                this.set("route.path", i)
+              }
+            },
+            __updatePathOnDataChange: function() {
+              if (this.route && this.active) {
+                var t = this.__getLink({});
+                t !== this.__getLink(this._dataInUrl) && this.set("route.path", t)
+              }
+            },
+            __getLink: function(t) {
+              var a = {
+                tail: null
+              };
+              for (var i in this.data) a[i] = this.data[i];
+              for (var i in t) a[i] = t[i];
+              var e = this.pattern.split("/"),
+              r = e.map(function(t) {
+                return ":" == t[0] && (t = a[t.slice(1)]),
+                t
+              },
+              this);
+              return a.tail && a.tail.path && (r.length > 0 && "/" === a.tail.path.charAt(0) ? r.push(a.tail.path.slice(1)) : r.push(a.tail.path)),
+              r.join("/")
+            },
+            __setMulti: function(t) {
+              for (var a in t) this._propertySetter(a, t[a]);
+              void 0 !== t.data && (this._pathEffector("data", this.data), this._notifyChange("data")),
+              void 0 !== t.active && (this._pathEffector("active", this.active), this._notifyChange("active")),
+              void 0 !== t.tail && (this._pathEffector("tail", this.tail), this._notifyChange("tail"))
+            }
+          })
+        } ()</script>
+      <script>!
+        function() {
+          "use strict";
+          function e(e, a) {
+            if (void 0 === t) {
+              t = !1;
+              try {
+                var h = new URL("b", "http://a");
+                h.pathname = "c%20d",
+                t = "http://a/c%20d" === h.href,
+                t = t && "http://www.google.com/?foo%20bar" === new URL("http://www.google.com/?foo bar").href
+              } catch(e) {}
+            }
+            return t ? new URL(e, a) : (n || (n = document.implementation.createHTMLDocument("url"), i = n.createElement("base"), n.head.appendChild(i), o = n.createElement("a")), i.href = a, o.href = e.replace(/ /g, "%20"), o)
+          }
+          var t, n, i, o;
+          Polymer({
+            is: "iron-location",
+            properties: {
+              path: {
+                type: String,
+                notify: !0,
+                value: function() {
+                  return window.decodeURIComponent(window.location.pathname)
+                }
+              },
+              query: {
+                type: String,
+                notify: !0,
+                value: function() {
+                  return window.location.search.slice(1)
+                }
+              },
+              hash: {
+                type: String,
+                notify: !0,
+                value: function() {
+                  return window.decodeURIComponent(window.location.hash.slice(1))
+                }
+              },
+              dwellTime: {
+                type: Number,
+                value: 2e3
+              },
+              urlSpaceRegex: {
+                type: String,
+                value: ""
+              },
+              _urlSpaceRegExp: {
+                computed: "_makeRegExp(urlSpaceRegex)"
+              },
+              _lastChangedAt: {
+                type: Number
+              },
+              _initialized: {
+                type: Boolean,
+                value: !1
+              }
+            },
+            hostAttributes: {
+              hidden: !0
+            },
+            observers: ["_updateUrl(path, query, hash)"],
+            attached: function() {
+              this.listen(window, "hashchange", "_hashChanged"),
+              this.listen(window, "location-changed", "_urlChanged"),
+              this.listen(window, "popstate", "_urlChanged"),
+              this.listen(document.body, "click", "_globalOnClick"),
+              this._lastChangedAt = window.performance.now() - (this.dwellTime - 200),
+              this._initialized = !0,
+              this._urlChanged()
+            },
+            detached: function() {
+              this.unlisten(window, "hashchange", "_hashChanged"),
+              this.unlisten(window, "location-changed", "_urlChanged"),
+              this.unlisten(window, "popstate", "_urlChanged"),
+              this.unlisten(document.body, "click", "_globalOnClick"),
+              this._initialized = !1
+            },
+            _hashChanged: function() {
+              this.hash = window.decodeURIComponent(window.location.hash.substring(1))
+            },
+            _urlChanged: function() {
+              this._dontUpdateUrl = !0,
+              this._hashChanged(),
+              this.path = window.decodeURIComponent(window.location.pathname),
+              this.query = window.location.search.substring(1),
+              this._dontUpdateUrl = !1,
+              this._updateUrl()
+            },
+            _getUrl: function() {
+              var e = window.encodeURI(this.path).replace(/\#/g, "%23").replace(/\?/g, "%3F"),
+              t = "";
+              this.query && (t = "?" + this.query.replace(/\#/g, "%23"));
+              var n = "";
+              return this.hash && (n = "#" + window.encodeURI(this.hash)),
+              e + t + n
+            },
+            _updateUrl: function() {
+              if (!this._dontUpdateUrl && this._initialized && (this.path !== window.decodeURIComponent(window.location.pathname) || this.query !== window.location.search.substring(1) || this.hash !== window.decodeURIComponent(window.location.hash.substring(1)))) {
+                var t = this._getUrl(),
+                n = e(t, window.location.protocol + "//" + window.location.host).href,
+                i = window.performance.now(),
+                o = this._lastChangedAt + this.dwellTime > i;
+                this._lastChangedAt = i,
+                o ? window.history.replaceState({},
+                "", n) : window.history.pushState({},
+                "", n),
+                this.fire("location-changed", {},
+                {
+                  node: window
+                })
+              }
+            },
+            _globalOnClick: function(e) {
+              if (!e.defaultPrevented) {
+                var t = this._getSameOriginLinkHref(e);
+                t && (e.preventDefault(), t !== window.location.href && (window.history.pushState({},
+                "", t), this.fire("location-changed", {},
+                {
+                  node: window
+                })))
+              }
+            },
+            _getSameOriginLinkHref: function(t) {
+              if (0 !== t.button) return null;
+              if (t.metaKey || t.ctrlKey) return null;
+              for (var n = Polymer.dom(t).path, i = null, o = 0; o < n.length; o++) {
+                var a = n[o];
+                if ("A" === a.tagName && a.href) {
+                  i = a;
+                  break
+                }
+              }
+              if (!i) return null;
+              if ("_blank" === i.target) return null;
+              if (("_top" === i.target || "_parent" === i.target) && window.top !== window) return null;
+              var h, r = i.href;
+              h = null != document.baseURI ? e(r, document.baseURI) : e(r);
+              var l;
+              l = window.location.origin ? window.location.origin: window.location.protocol + "//" + window.location.host;
+              if ((h.origin ? h.origin: h.protocol + "//" + h.host) !== l) return null;
+              var d = h.pathname + h.search + h.hash;
+              return "/" !== d[0] && (d = "/" + d),
+              this._urlSpaceRegExp && !this._urlSpaceRegExp.test(d) ? null: e(d, window.location.href).href
+            },
+            _makeRegExp: function(e) {
+              return RegExp(e)
+            }
+          })
+        } ()</script>
+      <script>"use strict";
+        Polymer({
+          is: "iron-query-params",
+          properties: {
+            paramsString: {
+              type: String,
+              notify: !0,
+              observer: "paramsStringChanged"
+            },
+            paramsObject: {
+              type: Object,
+              notify: !0,
+              value: function() {
+                return {}
+              }
+            },
+            _dontReact: {
+              type: Boolean,
+              value: !1
+            }
+          },
+          hostAttributes: {
+            hidden: !0
+          },
+          observers: ["paramsObjectChanged(paramsObject.*)"],
+          paramsStringChanged: function() {
+            this._dontReact = !0,
+            this.paramsObject = this._decodeParams(this.paramsString),
+            this._dontReact = !1
+          },
+          paramsObjectChanged: function() {
+            this._dontReact || (this.paramsString = this._encodeParams(this.paramsObject).replace(/%3F/g, "?").replace(/%2F/g, "/").replace(/'/g, "%27"))
+          },
+          _encodeParams: function(e) {
+            var t = [];
+            for (var a in e) {
+              var r = e[a];
+              "" === r ? t.push(encodeURIComponent(a)) : r && t.push(encodeURIComponent(a) + "=" + encodeURIComponent(r.toString()))
+            }
+            return t.join("&")
+          },
+          _decodeParams: function(e) {
+            var t = {};
+            e = (e || "").replace(/\+/g, "%20");
+            for (var a = e.split("&"), r = 0; r < a.length; r++) {
+              var n = a[r].split("=");
+              n[0] && (t[decodeURIComponent(n[0])] = decodeURIComponent(n[1] || ""))
+            }
+            return t
+          }
+        })</script>
+      <script>!
+        function() {
+          "use strict";
+          Polymer.AppRouteConverterBehavior = {
+            properties: {
+              route: {
+                type: Object,
+                notify: !0
+              },
+              queryParams: {
+                type: Object,
+                notify: !0
+              },
+              path: {
+                type: String,
+                notify: !0
+              }
+            },
+            observers: ["_locationChanged(path, queryParams)", "_routeChanged(route.prefix, route.path)", "_routeQueryParamsChanged(route.__queryParams)"],
+            created: function() {
+              this.linkPaths("route.__queryParams", "queryParams"),
+              this.linkPaths("queryParams", "route.__queryParams")
+            },
+            _locationChanged: function() {
+              this.route && this.route.path === this.path && this.queryParams === this.route.__queryParams || (this.route = {
+                prefix: "",
+                path: this.path,
+                __queryParams: this.queryParams
+              })
+            },
+            _routeChanged: function() {
+              this.route && (this.path = this.route.prefix + this.route.path)
+            },
+            _routeQueryParamsChanged: function(t) {
+              this.route && (this.queryParams = t)
+            }
+          }
+        } ()</script>
+      <dom-module id="app-location" assetpath="../bower_components/app-route/">
+        <template>
+          <iron-location path="{{__path}}" query="{{__query}}" hash="{{__hash}}" url-space-regex="{{urlSpaceRegex}}"></iron-location>
+          <iron-query-params params-string="{{__query}}" params-object="{{queryParams}}"></iron-query-params>
+        </template>
+        <script>!
+          function() {
+            "use strict";
+            Polymer({
+              is: "app-location",
+              properties: {
+                route: {
+                  type: Object,
+                  notify: !0
+                },
+                useHashAsPath: {
+                  type: Boolean,
+                  value: !1
+                },
+                urlSpaceRegex: {
+                  type: String,
+                  notify: !0
+                },
+                __queryParams: {
+                  type: Object
+                },
+                __path: {
+                  type: String
+                },
+                __query: {
+                  type: String
+                },
+                __hash: {
+                  type: String
+                },
+                path: {
+                  type: String,
+                  observer: "__onPathChanged"
+                },
+                _isReady: {
+                  type: Boolean
+                }
+              },
+              behaviors: [Polymer.AppRouteConverterBehavior],
+              observers: ["__computeRoutePath(useHashAsPath, __hash, __path)"],
+              ready: function() {
+                this._isReady = !0
+              },
+              __computeRoutePath: function() {
+                this.path = this.useHashAsPath ? this.__hash: this.__path
+              },
+              __onPathChanged: function() {
+                this._isReady && (this.useHashAsPath ? this.__hash = this.path: this.__path = this.path)
+              }
+            })
+          } ()</script>
       </dom-module>
       <dom-module id="iron-icon" assetpath="../bower_components/iron-icon/">
         <template>
@@ -11831,7 +12294,7 @@
         }]</script>
       <dom-module id="app-header-layout" assetpath="../bower_components/app-layout/app-header-layout/">
         <template>
-          <style>:host{display:block;position:relative;z-index:0}#wrapper ::slotted([slot=header]){@apply --layout-fixed-top;z-index:1}#wrapper.initializing ::slotted([slot=header]){position:relative}:host([has-scrolling-region]){height:100%}:host([has-scrolling-region]) #wrapper ::slotted([slot=header]){position:absolute}:host([has-scrolling-region]) #wrapper.initializing ::slotted([slot=header]){position:relative}:host([has-scrolling-region]) #wrapper #contentContainer{@apply --layout-fit;overflow-y:auto;-webkit-overflow-scrolling:touch;background-color: black}:host([has-scrolling-region]) #wrapper.initializing #contentContainer{position:relative}:host([fullbleed]){@apply --layout-vertical;@apply --layout-fit}:host([fullbleed]) #wrapper,:host([fullbleed]) #wrapper #contentContainer{@apply --layout-vertical;@apply --layout-flex;background-color: black}#contentContainer{position:relative;z-index:0;background-color: black}</style>
+          <style>:host{display:block;position:relative;z-index:0}#wrapper ::slotted([slot=header]){@apply --layout-fixed-top;z-index:1}#wrapper.initializing ::slotted([slot=header]){position:relative}:host([has-scrolling-region]){height:100%}:host([has-scrolling-region]) #wrapper ::slotted([slot=header]){position:absolute}:host([has-scrolling-region]) #wrapper.initializing ::slotted([slot=header]){position:relative}:host([has-scrolling-region]) #wrapper #contentContainer{@apply --layout-fit;overflow-y:auto;-webkit-overflow-scrolling:touch}:host([has-scrolling-region]) #wrapper.initializing #contentContainer{position:relative}:host([fullbleed]){@apply --layout-vertical;@apply --layout-fit}:host([fullbleed]) #wrapper,:host([fullbleed]) #wrapper #contentContainer{@apply --layout-vertical;@apply --layout-flex}#contentContainer{position:relative;z-index:0}</style>
           <div id="wrapper" class="initializing">
             <slot id="headerSlot" name="header"></slot>
             <div id="contentContainer">
@@ -12100,7 +12563,7 @@
         })</script>
       <dom-module id="app-header" assetpath="../bower_components/app-layout/app-header/">
         <template>
-          <style>:host{position:relative;display:block;transition-timing-function:linear;transition-property:-webkit-transform;transition-property:transform}:host::before{position:absolute;right:0;bottom:-5px;left:0;width:100%;height:5px;content:"";transition:opacity .4s;pointer-events:none;opacity:0;box-shadow:inset 0 5px 6px -3px rgba(0,0,0,.4);will-change:opacity;@apply --app-header-shadow}:host([shadow])::before{opacity:1}#background{@apply --layout-fit;overflow:hidden}#backgroundFrontLayer,#backgroundRearLayer{@apply --layout-fit;height:100%;pointer-events:none;background-size:cover}#backgroundFrontLayer{@apply --app-header-background-front-layer}#backgroundRearLayer{opacity:0;@apply --app-header-background-rear-layer}#contentContainer{position:relative;width:100%;height:100%;background-color: black}:host([disabled]),:host([disabled]) #backgroundFrontLayer,:host([disabled]) #backgroundRearLayer,:host([disabled])::after,:host([silent-scroll]),:host([silent-scroll]) #backgroundFrontLayer,:host([silent-scroll]) #backgroundRearLayer,:host([silent-scroll])::after{transition:none!important}:host([disabled]) ::slotted([sticky]),:host([disabled]) ::slotted(app-toolbar:first-of-type),:host([silent-scroll]) ::slotted([sticky]),:host([silent-scroll]) ::slotted(app-toolbar:first-of-type){transition:none!important}</style>
+          <style>:host{position:relative;display:block;transition-timing-function:linear;transition-property:-webkit-transform;transition-property:transform}:host::before{position:absolute;right:0;bottom:-5px;left:0;width:100%;height:5px;content:"";transition:opacity .4s;pointer-events:none;opacity:0;box-shadow:inset 0 5px 6px -3px rgba(0,0,0,.4);will-change:opacity;@apply --app-header-shadow}:host([shadow])::before{opacity:1}#background{@apply --layout-fit;overflow:hidden}#backgroundFrontLayer,#backgroundRearLayer{@apply --layout-fit;height:100%;pointer-events:none;background-size:cover}#backgroundFrontLayer{@apply --app-header-background-front-layer}#backgroundRearLayer{opacity:0;@apply --app-header-background-rear-layer}#contentContainer{position:relative;width:100%;height:100%}:host([disabled]),:host([disabled]) #backgroundFrontLayer,:host([disabled]) #backgroundRearLayer,:host([disabled])::after,:host([silent-scroll]),:host([silent-scroll]) #backgroundFrontLayer,:host([silent-scroll]) #backgroundRearLayer,:host([silent-scroll])::after{transition:none!important}:host([disabled]) ::slotted([sticky]),:host([disabled]) ::slotted(app-toolbar:first-of-type),:host([silent-scroll]) ::slotted([sticky]),:host([silent-scroll]) ::slotted(app-toolbar:first-of-type){transition:none!important}</style>
           <div id="contentContainer">
             <slot id="slot"></slot>
           </div>
@@ -12302,7 +12765,7 @@
         })</script>
       <dom-module id="ha-label-badge" assetpath="components/">
         <template>
-          <style>.badge-container{display:inline-block;text-align:center;vertical-align:top}.label-badge{position:relative;display:block;margin:0 auto;width:var(--ha-label-badge-size,2.5em);text-align:center;height:var(--ha-label-badge-size,2.5em);line-height:var(--ha-label-badge-size,2.5em);font-size:var(--ha-label-badge-font-size,1.5em);border-radius:50%;border:.1em solid var(--ha-label-badge-color,--primary-color);color:#4c4c4c;white-space:nowrap;background-color:#fff;background-size:cover;transition:border .3s ease-in-out}.label-badge .value{font-size:90%;overflow:hidden;text-overflow:ellipsis}.label-badge .value.big{font-size:70%}.label-badge .label{position:absolute;bottom:-1em;left:0;right:0;line-height:1em;font-size:.5em}.label-badge .label span{max-width:80%;display:inline-block;background-color:var(--ha-label-badge-color,--primary-color);color:#fff;border-radius:1em;padding:4px 8px;font-weight:500;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;transition:background-color .3s ease-in-out}.badge-container .title{margin-top:1em;font-size:.9em;width:5em;font-weight:500;overflow:hidden;text-overflow:ellipsis;line-height:normal}iron-image{border-radius:50%}[hidden]{display:none!important}</style>
+          <style>.badge-container{display:inline-block;text-align:center;vertical-align:top}.label-badge{position:relative;display:block;margin:0 auto;width:var(--ha-label-badge-size,2.5em);text-align:center;height:var(--ha-label-badge-size,2.5em);line-height:var(--ha-label-badge-size,2.5em);font-size:var(--ha-label-badge-font-size,1.5em);border-radius:50%;border:.1em solid var(--ha-label-badge-color,--primary-color);color:#4c4c4c;white-space:nowrap;background-color:#fff;background-size:cover;transition:border .3s ease-in-out}.label-badge .value{font-size:90%;overflow:hidden;text-overflow:ellipsis}.label-badge .value.big{font-size:70%}.label-badge .label{position:absolute;bottom:-1em;left:0;right:0;line-height:1em;font-size:.5em}.label-badge .label span{max-width:80%;display:inline-block;background-color:var(--ha-label-badge-color,--primary-color);color:#fff;border-radius:1em;padding:4px 8px;font-weight:500;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;transition:background-color .3s ease-in-out}.badge-container .title{margin-top:1em;font-size:.9em;width:5em;font-weight:300;overflow:hidden;text-overflow:ellipsis;line-height:normal}iron-image{border-radius:50%}[hidden]{display:none!important}</style>
           <div class="badge-container">
             <div class="label-badge" id="badge">
               <div class$="[[computeClasses(value)]]">
@@ -12555,7 +13018,7 @@
         })</script>
       <dom-module id="ha-card" assetpath="components/">
         <template>
-          <style include="paper-material">:host{display:block;border-radius:2px;transition:all .3s ease-out;background-color:#fff}.header{@apply(--paper-font-headline);@apply(--paper-font-common-expensive-kerning);opacity:var(--dark-primary-opacity);padding:24px 16px 16px;text-transform:capitalize}</style>
+          <style include="paper-material">:host{display:block;border-radius:2px;transition:all .3s ease-out;background-color:black}.header{@apply(--paper-font-headline);@apply(--paper-font-common-expensive-kerning);opacity:var(--dark-primary-opacity);padding:24px 16px 16px;text-transform:capitalize}</style>
           <template is="dom-if" if="[[header]]">
             <div class="header">[[header]]</div></template>
           <slot></slot>
@@ -12787,7 +13250,7 @@
         })</script>
       <dom-module id="state-info" assetpath="components/entity/">
         <template>
-          <style>:host{@apply(--paper-font-body1);min-width:150px;white-space:nowrap}state-badge{float:left}.info{margin-left:56px}.name{@apply(--paper-font-common-nowrap);color:white;line-height:40px}.name[in-dialog],:host([secondary-line]) .name{line-height:20px}.time-ago,::slotted(*){@apply(--paper-font-common-nowrap);color:var(--secondary-text-color)}</style>
+          <style>:host{@apply(--paper-font-body1);min-width:150px;white-space:nowrap}state-badge{float:left}.info{margin-left:56px}.name{@apply(--paper-font-common-nowrap);color:var(--primary-text-color);line-height:40px}.name[in-dialog],:host([secondary-line]) .name{line-height:20px}.time-ago,::slotted(*){@apply(--paper-font-common-nowrap);color:var(--secondary-text-color)}</style>
           <div>
             <state-badge state-obj="[[stateObj]]"></state-badge>
             <div class="info">
@@ -13143,7 +13606,7 @@
         })</script>
       <dom-module id="paper-slider" assetpath="../bower_components/paper-slider/">
         <template strip-whitespace="">
-          <style>:host{@apply --layout;@apply --layout-justified;@apply --layout-center;width:200px;cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;--paper-progress-active-color:var(--paper-slider-active-color, var(--google-blue-700));--paper-progress-secondary-color:var(--paper-slider-secondary-color, var(--google-blue-300));--paper-progress-disabled-active-color:var(--paper-slider-disabled-active-color, var(--paper-grey-400));--paper-progress-disabled-secondary-color:var(--paper-slider-disabled-secondary-color, var(--paper-grey-400));--calculated-paper-slider-height:var(--paper-slider-height, 2px)}:host(:focus){outline:0}:host-context([dir=rtl]) #sliderContainer{-webkit-transform:scaleX(-1);transform:scaleX(-1)}#sliderContainer{position:relative;width:100%;height:calc(30px + var(--calculated-paper-slider-height));margin-left:calc(15px + var(--calculated-paper-slider-height)/ 2);margin-right:calc(15px + var(--calculated-paper-slider-height)/ 2)}#sliderContainer:focus{outline:0}#sliderContainer.editable{margin-top:12px;margin-bottom:12px}.bar-container{position:absolute;top:0;bottom:0;left:0;right:0;overflow:hidden}.ring>.bar-container{left:calc(5px + var(--calculated-paper-slider-height)/ 2);transition:left .18s ease}.ring.expand.dragging>.bar-container{transition:none}.ring.expand:not(.pin)>.bar-container{left:calc(8px + var(--calculated-paper-slider-height)/ 2)}#sliderBar{padding:15px 0;width:100%;background-color:var(--paper-slider-bar-color,transparent);--paper-progress-container-color:var(--paper-slider-container-color, var(--paper-grey-400));--paper-progress-height:var(--calculated-paper-slider-height)}.slider-markers{position:absolute;top:calc(14px + var(--paper-slider-height,2px)/ 2);height:var(--calculated-paper-slider-height);left:0;right:-1px;box-sizing:border-box;pointer-events:none;@apply --layout-horizontal}.slider-marker{@apply --layout-flex}.slider-marker::after,.slider-markers::after{content:"";display:block;margin-left:-1px;width:2px;height:var(--calculated-paper-slider-height);border-radius:50%;background-color:var(--paper-slider-markers-color,#000)}.slider-knob{position:absolute;left:0;top:0;margin-left:calc(-15px - var(--calculated-paper-slider-height)/ 2);width:calc(30px + var(--calculated-paper-slider-height));height:calc(30px + var(--calculated-paper-slider-height))}.transiting>.slider-knob{transition:left 80ms ease}.slider-knob:focus{outline:0}.slider-knob.dragging{transition:none}.snaps>.slider-knob.dragging{transition:-webkit-transform 80ms ease;transition:transform 80ms ease}.slider-knob-inner{margin:10px;width:calc(100% - 20px);height:calc(100% - 20px);background-color:var(--paper-slider-knob-color,var(--google-blue-700));border:2px solid var(--paper-slider-knob-color,var(--google-blue-700));border-radius:50%;-moz-box-sizing:border-box;box-sizing:border-box;transition-property:-webkit-transform,background-color,border;transition-property:transform,background-color,border;transition-duration:.18s;transition-timing-function:ease}.expand:not(.pin)>.slider-knob>.slider-knob-inner{-webkit-transform:scale(1.5);transform:scale(1.5)}.ring>.slider-knob>.slider-knob-inner{background-color:var(--paper-slider-knob-start-color,transparent);border:2px solid var(--paper-slider-knob-start-border-color,var(--paper-grey-400))}.slider-knob-inner::before{background-color:var(--paper-slider-pin-color,var(--google-blue-700))}.pin>.slider-knob>.slider-knob-inner::before{content:"";position:absolute;top:0;left:50%;margin-left:-13px;width:26px;height:26px;border-radius:50% 50% 50% 0;-webkit-transform:rotate(-45deg) scale(0) translate(0);transform:rotate(-45deg) scale(0) translate(0)}.slider-knob-inner::after,.slider-knob-inner::before{transition:-webkit-transform .18s ease,background-color .18s ease;transition:transform .18s ease,background-color .18s ease}.pin.ring>.slider-knob>.slider-knob-inner::before{background-color:var(--paper-slider-pin-start-color,var(--paper-grey-400))}.pin.expand>.slider-knob>.slider-knob-inner::before{-webkit-transform:rotate(-45deg) scale(1) translate(17px,-17px);transform:rotate(-45deg) scale(1) translate(17px,-17px)}.pin>.slider-knob>.slider-knob-inner::after{content:attr(value);position:absolute;top:0;left:50%;margin-left:-16px;width:32px;height:26px;text-align:center;color:var(--paper-slider-font-color,#fff);font-size:10px;-webkit-transform:scale(0) translate(0);transform:scale(0) translate(0)}.pin.expand>.slider-knob>.slider-knob-inner::after{-webkit-transform:scale(1) translate(0,-17px);transform:scale(1) translate(0,-17px)}.slider-input{width:50px;overflow:hidden;--paper-input-container-input:{text-align:center};@apply --paper-slider-input}#sliderContainer.disabled{pointer-events:none}.disabled>.slider-knob>.slider-knob-inner{background-color:var(--paper-slider-disabled-knob-color,var(--paper-grey-400));border:2px solid var(--paper-slider-disabled-knob-color,var(--paper-grey-400));-webkit-transform:scale3d(.75,.75,1);transform:scale3d(.75,.75,1)}.disabled.ring>.slider-knob>.slider-knob-inner{background-color:var(--paper-slider-knob-start-color,transparent);border:2px solid var(--paper-slider-knob-start-border-color,var(--paper-grey-400))}paper-ripple{color:var(--paper-slider-knob-color,var(--google-blue-700))}</style>
+          <style>:host{@apply --layout;@apply --layout-justified;@apply --layout-center;width:200px;cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;--paper-progress-active-color:var(--paper-slider-active-color, var(--google-blue-700));--paper-progress-secondary-color:var(--paper-slider-secondary-color, var(--google-blue-300));--paper-progress-disabled-active-color:var(--paper-slider-disabled-active-color, var(--paper-grey-400));--paper-progress-disabled-secondary-color:var(--paper-slider-disabled-secondary-color, var(--paper-grey-400));--calculated-paper-slider-height:var(--paper-slider-height, 2px)}:host(:focus){outline:0}:host-context([dir=rtl]) #sliderContainer{-webkit-transform:scaleX(-1);transform:scaleX(-1)}:host([dir=rtl]) #sliderContainer{-webkit-transform:scaleX(-1);transform:scaleX(-1)}:host([dir=ltr]) #sliderContainer{-webkit-transform:scaleX(1);transform:scaleX(1)}#sliderContainer{position:relative;width:100%;height:calc(30px + var(--calculated-paper-slider-height));margin-left:calc(15px + var(--calculated-paper-slider-height)/ 2);margin-right:calc(15px + var(--calculated-paper-slider-height)/ 2)}#sliderContainer:focus{outline:0}#sliderContainer.editable{margin-top:12px;margin-bottom:12px}.bar-container{position:absolute;top:0;bottom:0;left:0;right:0;overflow:hidden}.ring>.bar-container{left:calc(5px + var(--calculated-paper-slider-height)/ 2);transition:left .18s ease}.ring.expand.dragging>.bar-container{transition:none}.ring.expand:not(.pin)>.bar-container{left:calc(8px + var(--calculated-paper-slider-height)/ 2)}#sliderBar{padding:15px 0;width:100%;background-color:var(--paper-slider-bar-color,transparent);--paper-progress-container-color:var(--paper-slider-container-color, var(--paper-grey-400));--paper-progress-height:var(--calculated-paper-slider-height)}.slider-markers{position:absolute;top:calc(14px + var(--paper-slider-height,2px)/ 2);height:var(--calculated-paper-slider-height);left:0;right:-1px;box-sizing:border-box;pointer-events:none;@apply --layout-horizontal}.slider-marker{@apply --layout-flex}.slider-marker::after,.slider-markers::after{content:"";display:block;margin-left:-1px;width:2px;height:var(--calculated-paper-slider-height);border-radius:50%;background-color:var(--paper-slider-markers-color,#000)}.slider-knob{position:absolute;left:0;top:0;margin-left:calc(-15px - var(--calculated-paper-slider-height)/ 2);width:calc(30px + var(--calculated-paper-slider-height));height:calc(30px + var(--calculated-paper-slider-height))}.transiting>.slider-knob{transition:left 80ms ease}.slider-knob:focus{outline:0}.slider-knob.dragging{transition:none}.snaps>.slider-knob.dragging{transition:-webkit-transform 80ms ease;transition:transform 80ms ease}.slider-knob-inner{margin:10px;width:calc(100% - 20px);height:calc(100% - 20px);background-color:var(--paper-slider-knob-color,var(--google-blue-700));border:2px solid var(--paper-slider-knob-color,var(--google-blue-700));border-radius:50%;-moz-box-sizing:border-box;box-sizing:border-box;transition-property:-webkit-transform,background-color,border;transition-property:transform,background-color,border;transition-duration:.18s;transition-timing-function:ease}.expand:not(.pin)>.slider-knob>.slider-knob-inner{-webkit-transform:scale(1.5);transform:scale(1.5)}.ring>.slider-knob>.slider-knob-inner{background-color:var(--paper-slider-knob-start-color,transparent);border:2px solid var(--paper-slider-knob-start-border-color,var(--paper-grey-400))}.slider-knob-inner::before{background-color:var(--paper-slider-pin-color,var(--google-blue-700))}.pin>.slider-knob>.slider-knob-inner::before{content:"";position:absolute;top:0;left:50%;margin-left:-13px;width:26px;height:26px;border-radius:50% 50% 50% 0;-webkit-transform:rotate(-45deg) scale(0) translate(0);transform:rotate(-45deg) scale(0) translate(0)}.slider-knob-inner::after,.slider-knob-inner::before{transition:-webkit-transform .18s ease,background-color .18s ease;transition:transform .18s ease,background-color .18s ease}.pin.ring>.slider-knob>.slider-knob-inner::before{background-color:var(--paper-slider-pin-start-color,var(--paper-grey-400))}.pin.expand>.slider-knob>.slider-knob-inner::before{-webkit-transform:rotate(-45deg) scale(1) translate(17px,-17px);transform:rotate(-45deg) scale(1) translate(17px,-17px)}.pin>.slider-knob>.slider-knob-inner::after{content:attr(value);position:absolute;top:0;left:50%;margin-left:-16px;width:32px;height:26px;text-align:center;color:var(--paper-slider-font-color,#fff);font-size:10px;-webkit-transform:scale(0) translate(0);transform:scale(0) translate(0)}.pin.expand>.slider-knob>.slider-knob-inner::after{-webkit-transform:scale(1) translate(0,-17px);transform:scale(1) translate(0,-17px)}.slider-input{width:50px;overflow:hidden;--paper-input-container-input:{text-align:center};@apply --paper-slider-input}#sliderContainer.disabled{pointer-events:none}.disabled>.slider-knob>.slider-knob-inner{background-color:var(--paper-slider-disabled-knob-color,var(--paper-grey-400));border:2px solid var(--paper-slider-disabled-knob-color,var(--paper-grey-400));-webkit-transform:scale3d(.75,.75,1);transform:scale3d(.75,.75,1)}.disabled.ring>.slider-knob>.slider-knob-inner{background-color:var(--paper-slider-knob-start-color,transparent);border:2px solid var(--paper-slider-knob-start-border-color,var(--paper-grey-400))}paper-ripple{color:var(--paper-slider-knob-color,var(--google-blue-700))}</style>
           <div id="sliderContainer" class$="[[_getClassNames(disabled, pin, snaps, immediateValue, min, expand, dragging, transiting, editable)]]">
             <div class="bar-container">
               <paper-progress disabled$="[[disabled]]" id="sliderBar" aria-hidden="true" min="[[min]]" max="[[max]]" step="[[step]]" value="[[immediateValue]]" secondary-progress="[[secondaryProgress]]" on-down="_bardown" on-up="_resetKnob" on-track="_onTrack"></paper-progress>
@@ -13479,7 +13942,7 @@
       <dom-module id="state-card-display" assetpath="state-summary/">
         <template>
           <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
-          <style>.state{@apply(--paper-font-body1);color:var(--primary-text-color);margin-left:16px;text-align:right;line-height:40px;background-color: black}</style>
+          <style>.state{@apply(--paper-font-body1);color:var(--primary-text-color);margin-left:16px;text-align:right;line-height:40px}</style>
           <div class="horizontal justified layout">
             <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
             <div class="state">[[computeStateDisplay(stateObj)]]</div></div>
@@ -15272,7 +15735,7 @@
         })</script>
       <dom-module id="state-card-weblink" assetpath="state-summary/">
         <template>
-          <style>:host{display:block}.name{@apply(--paper-font-common-nowrap);@apply(--paper-font-body1);color:white);text-transform:capitalize;line-height:40px;margin-left:16px}</style>
+          <style>:host{display:block}.name{@apply(--paper-font-common-nowrap);@apply(--paper-font-body1);color:var(--primary-color);text-transform:capitalize;line-height:40px;margin-left:16px}</style>
           <state-badge state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-badge>
           <a href$="[[stateObj.state]]" target="_blank" class="name" id="link">[[computeStateName(stateObj)]]</a></template>
       </dom-module>
@@ -15333,7 +15796,7 @@
       <dom-module id="ha-entities-card" assetpath="cards/">
         <template>
           <style is="custom-style" include="iron-flex"></style>
-          <style>.states{padding-bottom:16px;background-color: black}.state{padding:4px 16px;cursor:pointer}.header{@apply(--paper-font-headline);line-height:40px;color:var(--primary-text-color);padding:20px 16px 12px}.header .name{@apply(--paper-font-common-nowrap)}.header.domain .name{text-transform:capitalize}ha-entity-toggle{margin-left:16px}.header-more-info{cursor:pointer}</style>
+          <style>.states{padding-bottom:16px}.state{padding:4px 16px;cursor:pointer}.header{@apply(--paper-font-headline);line-height:40px;color:var(--primary-text-color);padding:20px 16px 12px}.header .name{@apply(--paper-font-common-nowrap)}.header.domain .name{text-transform:capitalize}ha-entity-toggle{margin-left:16px}.header-more-info{cursor:pointer}</style>
           <ha-card>
             <div class$="[[computeTitleClass(groupEntity)]]" on-tap="entityTapped">
               <div class="flex name">[[computeTitle(states, groupEntity)]]</div>
@@ -16006,7 +16469,7 @@
       <dom-module id="ha-cards" assetpath="components/">
         <template>
           <style is="custom-style" include="iron-flex iron-flex-factors"></style>
-          <style>:host{display:block;padding-top:8px;padding-right:8px}.badges{font-size:85%;text-align:center;color: white}.column{max-width:500px;overflow-x:hidden}.zone-card{margin-left:8px;margin-bottom:8px}@media (max-width:500px){:host{padding-right:0}.zone-card{margin-left:0}}@media (max-width:599px){.column{max-width:600px}}</style>
+          <style>:host{display:block;padding-top:8px;padding-right:8px}.badges{font-size:85%;text-align:center}.column{max-width:500px;overflow-x:hidden}.zone-card{margin-left:8px;margin-bottom:8px}@media (max-width:500px){:host{padding-right:0}.zone-card{margin-left:0}}@media (max-width:599px){.column{max-width:600px}}</style>
           <div class="main">
             <template is="dom-if" if="[[cards.badges]]">
               <div class="badges">
@@ -16193,7 +16656,8 @@
         } ()</script>
       <dom-module id="partial-cards" assetpath="layouts/">
         <template>
-          <style include="iron-flex iron-positioning ha-style">:host{-ms-user-select:none;-webkit-user-select:none;-moz-user-select:none}app-header-layout{background-color:#e5e5e5}paper-tabs{margin-left:12px;--paper-tabs-selection-bar-color:#FFF;text-transform:uppercase}</style>
+          <style include="iron-flex iron-positioning ha-style">:host{-ms-user-select:none;-webkit-user-select:none;-moz-user-select:none}app-header-layout{background-color:black}paper-tabs{margin-left:12px;--paper-tabs-selection-bar-color:black;text-transform:uppercase}</style>
+          <app-route route="{{route}}" pattern="/:view" data="{{routeData}}" active="{{routeMatch}}"></app-route>
           <app-header-layout has-scrolling-region="" id="layout">
             <app-header effects="waterfall" condenses="" fixed="" slot="header">
               <app-toolbar>
@@ -16201,8 +16665,8 @@
                 <div main-title="">[[computeTitle(views, locationName)]]</div>
                 <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
               </app-toolbar>
-              <div sticky="" hidden$="[[!views.length]]">
-                <paper-tabs scrollable="" selected="[[currentView]]" attr-for-selected="data-entity" on-iron-select="handleViewSelected">
+              <div sticky="" hidden$="[[areTabsHidden(views, showTabs)]]">
+                <paper-tabs scrollable="" selected="[[currentView]]" attr-for-selected="data-entity" on-iron-activate="handleViewSelected">
                   <paper-tab data-entity="" on-tap="scrollToTop">
                     <template is="dom-if" if="[[!defaultView]]">[[locationName]]</template>
                     <template is="dom-if" if="[[defaultView]]">
@@ -16224,7 +16688,7 @@
             <iron-pages attr-for-selected="data-view" selected="[[currentView]]" selected-attribute="view-visible">
               <ha-cards data-view="" show-introduction="[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]"></ha-cards>
               <template is="dom-repeat" items="[[views]]">
-                <ha-cards data-view$="[[item.entity_id]]" show-introduction="[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]"></ha-cards>
+                <ha-cards data-view$="[[item.entity_id]]" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]"></ha-cards>
               </template>
             </iron-pages>
           </app-header-layout>
@@ -16252,6 +16716,9 @@
               type: Boolean,
               value: !1
             },
+            route: Object,
+            routeData: Object,
+            routeMatch: Boolean,
             _columns: {
               type: Number,
               value: 1
@@ -16266,7 +16733,8 @@
               computed: "computeLocationName(hass)"
             },
             currentView: {
-              type: String
+              type: String,
+              computed: "_computeCurrentView(routeMatch, routeData)"
             },
             views: {
               type: Array
@@ -16277,6 +16745,10 @@
             viewStates: {
               type: Object,
               computed: "computeViewStates(currentView, hass, defaultView)"
+            },
+            showTabs: {
+              type: Boolean,
+              value: !1
             }
           },
           created: function() {
@@ -16299,34 +16771,43 @@
             0);
             this._columns = Math.max(1, t - (!this.narrow && this.showMenu))
           },
+          areTabsHidden: function(t, e) {
+            return ! t.length || !e
+          },
           scrollToTop: function() {
             var t = this.$.layout.header.scrollTarget,
-            e = function(t, e, i, n) {
-              return t /= n,
-              -i * t * (t - 2) + e
+            e = function(t, e, n, i) {
+              return t /= i,
+              -n * t * (t - 2) + e
             },
-            i = Math.random(),
-            n = Date.now(),
+            n = Math.random(),
+            i = Date.now(),
             a = t.scrollTop,
             o = 0 - a;
-            this._currentAnimationId = i,
+            this._currentAnimationId = n,
             function s() {
               var r = Date.now(),
-              u = r - n;
-              u > 200 ? t.scrollTop = 0 : this._currentAnimationId === i && (t.scrollTop = e(u, a, o, 200), requestAnimationFrame(s.bind(this)))
+              u = r - i;
+              u > 200 ? t.scrollTop = 0 : this._currentAnimationId === n && (t.scrollTop = e(u, a, o, 200), requestAnimationFrame(s.bind(this)))
             }.call(this)
           },
           handleViewSelected: function(t) {
             var e = t.detail.item.getAttribute("data-entity") || null;
-            e !== (this.currentView || null) && this.fire("hass-navigate", {
-              view: e
-            })
+            if (e !== this.currentView) {
+              var n = "/states";
+              e && (n += "/" + e),
+              history.pushState(null, null, n),
+              this.fire("location-changed")
+            }
+          },
+          _computeCurrentView: function(t, e) {
+            return t ? e.view: ""
           },
           computeTitle: function(t, e) {
             return t && t.length > 0 ? "Home Assistant": e
           },
-          computeShowIntroduction: function(t, e, i) {
-            return "" === t && (e || 0 === i.size)
+          computeShowIntroduction: function(t, e, n) {
+            return "" === t && (e || 0 === n.size)
           },
           computeStateName: function(t) {
             return t.entity_id === this.DEFAULT_VIEW_ENTITY_ID ? t.attributes.friendly_name && "default_view" !== t.attributes.friendly_name ? t.attributes.friendly_name: this.computeLocationName(this.hass) : window.hassUtil.computeStateName(t)
@@ -16338,22 +16819,22 @@
             return window.hassUtil.isComponentLoaded(t, "introduction")
           },
           hassChanged: function(t) {
-            var e = t.currentView || "";
-            e !== this.currentView && (this.currentView = e);
-            var i = window.HAWS.extractViews(t.states);
-            i.length > 0 && i[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID ? this.defaultView = i.shift() : this.defaultView = null,
-            this.views = i
+            if (t) {
+              var e = window.HAWS.extractViews(t.states);
+              e.length > 0 && e[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID ? this.defaultView = e.shift() : this.defaultView = null,
+              this.views = e
+            }
           },
-          computeViewStates: function(t, e, i) {
-            var n, a, o, s, r = Object.keys(e.states);
-            if (!t && !i) {
+          computeViewStates: function(t, e, n) {
+            var i, a, o, s, r = Object.keys(e.states);
+            if (!t && !n) {
               for (s = {},
-              n = 0; n < r.length; n++) a = r[n],
+              i = 0; i < r.length; i++) a = r[i],
               o = e.states[a],
               o.attributes.hidden || (s[a] = o);
               return s
             }
-            for (s = t ? window.HAWS.getViewEntities(e.states, e.states[t]) : window.HAWS.getViewEntities(e.states, e.states[this.DEFAULT_VIEW_ENTITY_ID]), n = 0; n < r.length; n++) a = r[n],
+            for (s = t ? window.HAWS.getViewEntities(e.states, e.states[t]) : window.HAWS.getViewEntities(e.states, e.states[this.DEFAULT_VIEW_ENTITY_ID]), i = 0; i < r.length; i++) a = r[i],
             o = e.states[a],
             -1 !== this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(o)) && (s[a] = o);
             return s
@@ -16361,7 +16842,7 @@
         })</script>
       <dom-module id="hass-loading-screen" assetpath="layouts/">
         <template>
-          <style include="iron-flex ha-style">[hidden]{display:none!important}.placeholder{height:100%}.layout{height:calc(100% - 64px)}</style>
+          <style include="iron-flex ha-style">.placeholder{height:100%}.layout{height:calc(100% - 64px)}</style>
           <div class="placeholder">
             <app-toolbar>
               <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
@@ -16392,6 +16873,7 @@
       <dom-module id="partial-panel-resolver" assetpath="layouts/">
         <template>
           <style>[hidden]{display:none!important}</style>
+          <app-route route="{{route}}" pattern="/:panel" data="{{routeData}}" tail="{{routeTail}}"></app-route>
           <template is="dom-if" if="[[!resolved]]">
             <hass-loading-screen narrow="[[narrow]]" show-menu="[[showMenu]]"></hass-loading-screen>
           </template>
@@ -16415,6 +16897,12 @@
               value: !1,
               observer: "updateAttributes"
             },
+            route: Object,
+            routeData: Object,
+            routeTail: {
+              type: Object,
+              observer: "updateAttributes"
+            },
             resolved: {
               type: Boolean,
               value: !1
@@ -16425,12 +16913,12 @@
             },
             panel: {
               type: Object,
-              computed: "computeCurrentPanel(hass)",
+              computed: "computeCurrentPanel(hass, routeData)",
               observer: "panelChanged"
             }
           },
-          computeCurrentPanel: function(e) {
-            return e.config.panels[e.currentPanel]
+          computeCurrentPanel: function(e, t) {
+            return t ? e.config.panels[t.panel] : null
           },
           panelChanged: function(e) {
             if (!e) return void(this.$.panel.lastChild && this.$.panel.removeChild(this.$.panel.lastChild));
@@ -16442,6 +16930,7 @@
                 hass: this.hass,
                 narrow: this.narrow,
                 showMenu: this.showMenu,
+                route: this.routeTail,
                 panel: e
               }),
               this.resolved = !0
@@ -16452,7 +16941,7 @@
           },
           updateAttributes: function() {
             var e = Polymer.dom(this.$.panel).lastChild;
-            e && (e.hass = this.hass, e.narrow = this.narrow, e.showMenu = this.showMenu)
+            e && (e.hass = this.hass, e.narrow = this.narrow, e.showMenu = this.showMenu, e.route = this.routeTail)
           }
         })</script>
       <script>!
@@ -18443,16 +18932,6 @@
         })</script>
       <script>!
         function() {
-          function t(t, e) {
-            var n = {
-              panel: t
-            };
-            return "states" === t && (n.view = e || null),
-            n
-          }
-          function e(t, e) {
-            return "states" === t && e ? "/" + t + "/" + e: "/" + t
-          }
           Polymer({
             is: "ha-url-sync",
             properties: {
@@ -18461,23 +18940,24 @@
                 observer: "hassChanged"
               }
             },
-            hassChanged: function(n, s) {
-              if (s) return n.currentPanel === s.currentPanel && n.currentView === s.currentView ? void(s.moreInfoEntityId !== n.moreInfoEntityId && (n.moreInfoEntityId ? history.pushState(history.state, "Home Assistant", window.location.pathname) : this.ignoreNextDeselectEntity ? this.ignoreNextDeselectEntity = !1 : history.back())) : this.ignoreNextNav ? void(this.ignoreNextNav = !1) : void history.pushState(t(n.currentPanel, n.currentView), "Home Assistant", e(n.currentPanel, n.currentView))
+            hassChanged: function(t, e) {
+              if (this.ignoreNextHassChange) return void(this.ignoreNextHassChange = !1);
+              e && e.moreInfoEntityId !== t.moreInfoEntityId && (t.moreInfoEntityId ? history.pushState(null, null, window.location.pathname) : (this.ignoreNextPopstate = !0, history.back()))
             },
             popstateChangeListener: function(t) {
-              this.hass.moreInfoEntityId ? (this.ignoreNextDeselectEntity = !0, this.fire("hass-more-info", {
+              if (this.ignoreNextPopstate) return void(this.ignoreNextPopstate = !1);
+              this.hass.moreInfoEntityId && (this.ignoreNextHassChange = !0, this.fire("hass-more-info", {
                 entityId: null
-              })) : this.hass.currentPanel === t.state.panel && this.hass.currentView === t.state.view || (this.ignoreNextNav = !0, this.fire("hass-navigate", t.state))
+              }))
             },
             attached: function() {
-              if (this.popstateChangeListener = this.popstateChangeListener.bind(this), window.addEventListener("popstate", this.popstateChangeListener), "/" === window.location.pathname) {
-                var n = this.hass.currentPanel,
-                s = this.hass.currentView;
-                history.replaceState(t(n, s), "Home Assistant", e(n, s))
-              } else {
-                var i = window.location.pathname.substr(1).split("/");
-                this.fire("hass-navigate", t(i[0], i[1]))
-              }
+              this.ignoreNextPopstate = !1,
+              this.ignoreNextHassChange = !1,
+              this.popstateChangeListener = this.popstateChangeListener.bind(this),
+              window.addEventListener("popstate", this.popstateChangeListener)
+            },
+            detached: function() {
+              window.removeEventListener("popstate", this.popstateChangeListener)
             }
           })
         } ()</script>
@@ -18593,7 +19073,7 @@
             <div main-title="">Home Assistant</div>
             <paper-icon-button icon="mdi:chevron-left" hidden$="[[narrow]]" on-tap="toggleMenu"></paper-icon-button>
           </app-toolbar>
-          <paper-listbox attr-for-selected="data-panel" selected="[[hass.currentPanel]]" on-iron-select="menuSelect">
+          <paper-listbox attr-for-selected="data-panel" selected="[[route.panel]]">
             <paper-icon-item on-tap="menuClicked" data-panel="states">
               <iron-icon slot="item-icon" icon="mdi:apps"></iron-icon>
               <span class="item-text">States</span></paper-icon-item>
@@ -18638,9 +19118,8 @@
             menuSelected: {
               type: String
             },
-            narrow: {
-              type: Boolean
-            },
+            narrow: Boolean,
+            route: Object,
             panels: {
               type: Array,
               computed: "computePanels(hass)"
@@ -18649,9 +19128,6 @@
               type: Boolean,
               value: !0
             }
-          },
-          created: function() {
-            this._boundUpdateStyles = this.updateStyles.bind(this)
           },
           computePanels: function(e) {
             var t = e.config.panels,
@@ -18671,9 +19147,6 @@
             }),
             o
           },
-          menuSelect: function() {
-            this.debounce("updateStyles", this._boundUpdateStyles, 1)
-          },
           menuClicked: function(e) {
             for (var t = e.target,
             n = 5,
@@ -18686,13 +19159,9 @@
             this.fire("hass-close-menu")
           },
           selectPanel: function(e) {
-            if (e !== this.hass.currentPanel) {
-              if ("logout" === e) return void this.handleLogOut();
-              this.fire("hass-navigate", {
-                panel: e
-              }),
-              this.debounce("updateStyles", this._boundUpdateStyles, 1)
-            }
+            if ("logout" === e) return void this.handleLogOut();
+            var t = "/" + e;
+            t !== document.location.pathname && (history.pushState(null, null, t), this.fire("location-changed"))
           },
           handleLogOut: function() {
             this.fire("hass-logout")
@@ -18702,13 +19171,16 @@
         <template>
           <more-info-dialog hass="[[hass]]"></more-info-dialog>
           <ha-url-sync hass="[[hass]]"></ha-url-sync>
+          <app-location route="{{route}}"></app-location>
+          <app-route route="{{route}}" pattern="/:panel" data="{{routeData}}" tail="{{routeTail}}"></app-route>
+          <app-route route="{{route}}" pattern="/states" tail="{{statesRouteTail}}"></app-route>
           <ha-voice-command-dialog hass="[[hass]]" id="voiceDialog"></ha-voice-command-dialog>
           <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}"></iron-media-query>
           <paper-drawer-panel id="drawer" force-narrow="[[computeForceNarrow(narrow, dockedSidebar)]]" responsive-width="0" disable-swipe="[[isSelectedMap]]" disable-edge-swipe="[[isSelectedMap]]">
-            <ha-sidebar slot="drawer" narrow="[[narrow]]" hass="[[hass]]"></ha-sidebar>
-            <iron-pages slot="main" attr-for-selected="id" fallback-selection="panel-resolver" selected="[[currentPanel]]" selected-attribute="panel-visible">
-              <partial-cards id="states" narrow="[[narrow]]" hass="[[hass]]" show-menu="[[dockedSidebar]]"></partial-cards>
-              <partial-panel-resolver id="panel-resolver" narrow="[[narrow]]" hass="[[hass]]" show-menu="[[dockedSidebar]]"></partial-panel-resolver>
+            <ha-sidebar slot="drawer" narrow="[[narrow]]" hass="[[hass]]" route="[[routeData]]"></ha-sidebar>
+            <iron-pages slot="main" attr-for-selected="id" fallback-selection="panel-resolver" selected="[[_computeSelected(routeData)]]" selected-attribute="panel-visible">
+              <partial-cards id="states" narrow="[[narrow]]" hass="[[hass]]" show-menu="[[dockedSidebar]]" route="[[statesRouteTail]]" show-tabs=""></partial-cards>
+              <partial-panel-resolver id="panel-resolver" narrow="[[narrow]]" hass="[[hass]]" route="[[route]]" show-menu="[[dockedSidebar]]"></partial-panel-resolver>
             </iron-pages>
           </paper-drawer-panel>
         </template>
@@ -18716,17 +19188,15 @@
       <script>Polymer({
           is: "home-assistant-main",
           properties: {
-            hass: {
+            hass: Object,
+            narrow: Boolean,
+            route: {
               type: Object,
-              value: null,
-              observer: "hassChanged"
+              observer: "_routeChanged"
             },
-            narrow: {
-              type: Boolean
-            },
-            currentPanel: {
-              type: String
-            },
+            routeData: Object,
+            routeTail: Object,
+            statesRouteTail: Object,
             dockedSidebar: {
               type: Boolean,
               computed: "computeDockedSidebar(hass)"
@@ -18737,8 +19207,20 @@
             "hass-close-menu": "handleCloseMenu",
             "hass-start-voice": "handleStartVoice"
           },
-          hassChanged: function(e) {
-            this.currentPanel !== e.currentPanel && (this.currentPanel = e.currentPanel, this.narrow && this.$.drawer.closeDrawer())
+          ready: function() {
+            if (this.hass) {
+              var e = this;
+              this.hass.callApi("get", "themes").then(function(t) {
+                window.hassUtil.applyThemesOnElement(e, t)
+              }),
+              this.hass.connection.subscribeEvents(function(t) {
+                window.hassUtil.applyThemesOnElement(e, t.data)
+              },
+              "themes_updated")
+            }
+          },
+          _routeChanged: function() {
+            this.narrow && this.$.drawer.closeDrawer()
           },
           handleStartVoice: function(e) {
             e.stopPropagation(),
@@ -18756,19 +19238,24 @@
             })
           },
           attached: function() {
-            window.removeInitMsg()
+            window.removeInitMsg(),
+            "/" === document.location.pathname && history.replaceState(null, null, "/states")
           },
-          computeForceNarrow: function(e, n) {
-            return e || !n
+          computeForceNarrow: function(e, t) {
+            return e || !t
           },
           computeDockedSidebar: function(e) {
             return e.dockedSidebar
+          },
+          _computeSelected: function(e) {
+            return e.panel || "states"
           }
         })</script>
-      <style is="custom-style">html{font-size:14px;--paper-grey-50:#fafafa;--paper-grey-200:#eeeeee;--dark-primary-color:#0288D1;--primary-color:#03A9F4;--light-primary-color:#B3E5FC;--text-primary-color:#ffffff;--accent-color:#FF9800;--primary-background-color:var(--paper-grey-50);--primary-text-color:#212121;--secondary-text-color:#727272;--disabled-text-color:#bdbdbd;--divider-color:rgba(0, 0, 0, .12);--paper-toggle-button-checked-ink-color:#039be5;--paper-toggle-button-checked-button-color:#039be5;--paper-toggle-button-checked-bar-color:#039be5;--paper-slider-knob-color:var(--primary-color);--paper-slider-knob-start-color:var(--primary-color);--paper-slider-pin-color:var(--primary-color);--paper-slider-active-color:var(--primary-color);--paper-slider-secondary-color:var(--light-primary-color);--paper-slider-container-color:var(--divider-color);--paper-card-background-color:#FFF;--paper-listbox-background-color:#FFF;--google-red-500:#db4437;--google-blue-500:#4285f4;--google-green-500:#0f9d58;--google-yellow-500:#f4b400;--paper-green-400:#66bb6a;--paper-blue-400:#42a5f5;--paper-orange-400:#ffa726;--dark-divider-opacity:0.12;--dark-disabled-opacity:0.38;--dark-secondary-opacity:0.54;--dark-primary-opacity:0.87;--light-divider-opacity:0.12;--light-disabled-opacity:0.3;--light-secondary-opacity:0.7;--light-primary-opacity:1.0}</style>
+      <custom-style>
+        <style is="custom-style">html{font-size:14px;--paper-grey-50:#fafafa;--paper-grey-200:#eeeeee;--dark-primary-color:#0288D1;--primary-color:#03A9F4;--light-primary-color:#B3E5FC;--text-primary-color:#ffffff;--accent-color:#FF9800;--primary-background-color:var(--paper-grey-50);--primary-text-color:#212121;--secondary-text-color:#727272;--disabled-text-color:#bdbdbd;--divider-color:rgba(0, 0, 0, .12);--paper-toggle-button-checked-ink-color:#039be5;--paper-toggle-button-checked-button-color:#039be5;--paper-toggle-button-checked-bar-color:#039be5;--paper-slider-knob-color:var(--primary-color);--paper-slider-knob-start-color:var(--primary-color);--paper-slider-pin-color:var(--primary-color);--paper-slider-active-color:var(--primary-color);--paper-slider-secondary-color:var(--light-primary-color);--paper-slider-container-color:var(--divider-color);--paper-card-background-color:#FFF;--paper-listbox-background-color:#FFF;--google-red-500:#db4437;--google-blue-500:#4285f4;--google-green-500:#0f9d58;--google-yellow-500:#f4b400;--paper-green-400:#66bb6a;--paper-blue-400:#42a5f5;--paper-orange-400:#ffa726;--dark-divider-opacity:0.12;--dark-disabled-opacity:0.38;--dark-secondary-opacity:0.54;--dark-primary-opacity:0.87;--light-divider-opacity:0.12;--light-disabled-opacity:0.3;--light-secondary-opacity:0.7;--light-primary-opacity:1.0}</style></custom-style>
       <dom-module id="ha-style" assetpath="resources/">
         <template>
-          <style>:host{@apply(--paper-font-body1)}app-header-layout{background-color:var(--primary-background-color)}app-header,app-toolbar{background-color:black;font-weight:400;color:black}app-toolbar ha-menu-button+[main-title]{margin-left:24px}h1{@apply(--paper-font-title)}.card-actions>ha-call-api-button:not([disabled]),.card-actions>ha-call-service-button:not([disabled]),.card-actions>paper-button:not([disabled]){color:var(--primary-color);font-weight:500}.card-actions>ha-call-api-button.warning:not([disabled]),.card-actions>ha-call-service-button.warning:not([disabled]),.card-actions>paper-button.warning:not([disabled]){color:var(--google-red-500)}</style></template>
+          <style>:host{@apply(--paper-font-body1)}app-header-layout{background-color:var(--primary-background-color)}app-header,app-toolbar{background-color:var(--primary-color);font-weight:400;color:black}app-toolbar ha-menu-button+[main-title]{margin-left:24px}h1{@apply(--paper-font-title)}.card-actions>ha-call-api-button:not([disabled]),.card-actions>ha-call-service-button:not([disabled]),.card-actions>paper-button:not([disabled]){color:var(--primary-color);font-weight:500}.card-actions>ha-call-api-button.warning:not([disabled]),.card-actions>ha-call-service-button.warning:not([disabled]),.card-actions>paper-button.warning:not([disabled]){color:var(--google-red-500)}</style></template>
       </dom-module>
       <dom-module id="paper-toast" assetpath="../bower_components/paper-toast/">
         <template>
@@ -18919,7 +19406,7 @@
         <ha-pref-storage hass="[[hass]]" id="storage"></ha-pref-storage>
         <notification-manager id="notifications" hass="[[hass]]"></notification-manager>
         <template is="dom-if" if="[[showMain]]" restamp="">
-          <home-assistant-main on-hass-more-info="handleMoreInfo" on-hass-navigate="handleNavigate" on-hass-dock-sidebar="handleDockSidebar" on-hass-notification="handleNotification" on-hass-logout="handleLogout" hass="[[hass]]"></home-assistant-main>
+          <home-assistant-main on-hass-more-info="handleMoreInfo" on-hass-dock-sidebar="handleDockSidebar" on-hass-notification="handleNotification" on-hass-logout="handleLogout" hass="[[hass]]"></home-assistant-main>
         </template>
         <template is="dom-if" if="[[!showMain]]" restamp="">
           <login-form hass="[[hass]]" connection-promise="{{connectionPromise}}" show-loading="[[computeShowLoading(connectionPromise, hass, iconsLoaded)]]"></login-form>
@@ -18980,42 +19467,40 @@
         connectionChanged: function(n, t) {
           if (t && (this.unsubConnection(), this.unsubConnection = null), !n) return void(this.hass = null);
           var i = this.$.notifications,
-          e = this;
+          o = this;
           this.hass = Object.assign({
             connection: n,
             connected: !0,
             states: null,
             config: null,
             dockedSidebar: !1,
-            currentPanel: "states",
-            currentView: null,
             moreInfoEntityId: null,
-            callService: function(t, o, s) {
-              return n.callService(t, o, s || {}).then(function() {
-                var n, a;
-                s.entity_id && e.hass.states && e.hass.states[s.entity_id] && (a = window.hassUtil.computeStateName(e.hass.states[s.entity_id])),
-                n = "turn_on" === o && s.entity_id ? "Turned on " + (a || s.entity_id) + ".": "turn_off" === o && s.entity_id ? "Turned off " + (a || s.entity_id) + ".": "Service " + t + "/" + o + " called.",
+            callService: function(t, e, s) {
+              return n.callService(t, e, s || {}).then(function() {
+                var n, c;
+                s.entity_id && o.hass.states && o.hass.states[s.entity_id] && (c = window.hassUtil.computeStateName(o.hass.states[s.entity_id])),
+                n = "turn_on" === e && s.entity_id ? "Turned on " + (c || s.entity_id) + ".": "turn_off" === e && s.entity_id ? "Turned off " + (c || s.entity_id) + ".": "Service " + t + "/" + e + " called.",
                 i.showNotification(n)
               },
               function() {
-                return i.showNotification("Failed to call service " + t + "/" + o),
+                return i.showNotification("Failed to call service " + t + "/" + e),
                 Promise.reject()
               })
             },
-            callApi: function(t, i, e) {
-              var o = window.location.protocol + "//" + window.location.host,
+            callApi: function(t, i, o) {
+              var e = window.location.protocol + "//" + window.location.host,
               s = n.options.authToken ? n.options: {};
-              return window.hassCallApi(o, s, t, i, e)
+              return window.hassCallApi(e, s, t, i, o)
             }
           },
           this.$.storage.getStoredState());
-          var o = function() {
+          var e = function() {
             this.hass = Object.assign({},
             this.hass, {
               connected: !0
             })
           }.bind(this);
-          n.addEventListener("ready", o);
+          n.addEventListener("ready", e);
           var s = function() {
             this.hass = Object.assign({},
             this.hass, {
@@ -19023,7 +19508,7 @@
             })
           }.bind(this);
           n.addEventListener("disconnected", s);
-          var a;
+          var c;
           window.HAWS.subscribeEntities(n,
           function(n) {
             this.hass = Object.assign({},
@@ -19031,9 +19516,9 @@
               states: n
             })
           }.bind(this)).then(function(n) {
-            a = n
+            c = n
           });
-          var c;
+          var a;
           window.HAWS.subscribeConfig(n,
           function(n) {
             this.hass = Object.assign({},
@@ -19041,13 +19526,13 @@
               config: n
             })
           }.bind(this)).then(function(n) {
-            c = n
+            a = n
           }),
           this.unsubConnection = function() {
-            n.removeEventListener("ready", o),
+            n.removeEventListener("ready", e),
             n.removeEventListener("disconnected", s),
-            a(),
-            c()
+            c(),
+            a()
           }
         },
         handleConnectionPromise: function(n) {
@@ -19067,14 +19552,6 @@
           this.hass, {
             moreInfoEntityId: n.detail.entityId
           })
-        },
-        handleNavigate: function(n) {
-          n.stopPropagation();
-          var t = Object.assign({},
-          this.hass);
-          "panel" in n.detail && (t.currentPanel = n.detail.panel),
-          "view" in n.detail && (t.currentView = n.detail.view),
-          this.hass = t
         },
         handleDockSidebar: function(n) {
           n.stopPropagation(),
