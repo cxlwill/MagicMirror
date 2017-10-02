@@ -1,5 +1,12 @@
-# MagicMirror
-基于树莓派的自制魔镜，集成MagicMirror2，Google Assistant，Home assistant，Homebridge及中文聊天机器人。
+# Magic Mirror
+基于树莓派的自制魔镜，集成 Magic Mirror，Google Assistant，Home assistant，Homebridge及中文聊天机器人。
+
+实现功能：
+
+- 人机语音交互，包括语音控制智能家居设备、日常聊天等
+- 动态可触控房屋平面图
+- 摄像头实时监控
+- 基本的人脸识别功能
 
 欢迎加入项目 [Slack](https://join.slack.com/t/magicmirror-cn/shared_invite/MjExNjg5MzY0NTQ1LTE0OTk5MzQyNjktMjc5YjNmMjU5Mg) ！
 
@@ -9,6 +16,7 @@
 3. 驱动板（淘宝）；
 4. 单向透视镜（淘宝定制）；
 5. 木框（淘宝定制）
+6. 树莓派官方摄像头
 
 建议：
 1. 2&3可以依实际情况选择拆解显示器，或购买单屏成品，建议接口位于侧面并支持HDMI输入；
@@ -21,37 +29,26 @@
 3. 打开终端，进行基本更新，包括替换源至国内。
 
 ### 二、聊天机器人
-聊天机器人有多种选择，英文对话推荐使用Alexa及Gooogle Assistant（需要翻墙），中文对话可使用up主自制简易聊天机器人，拥有相应资质亦可尝试申请使用阿里云、百度等聊天机器人，有能力的可以自行开发。
+聊天机器人有多种选择，英文对话推荐使用Alexa 及 Gooogle Assistant（需要翻墙），中文对话可使用 up 主自制简易聊天机器人，拥有相应资质亦可尝试申请使用阿里云、百度等聊天机器人，有能力的可以自行开发。
 
-#### 1. Google Assistant
-谷歌助手对树莓派支持良好，客制化程度高，没有语言及网络障碍情况下首推。安装后原生在后台虚拟空间运行。
+#### Google Assistant
+谷歌助手对树莓派支持良好，客制化程度高，没有语言及网络障碍情况下首推。安装后原生在后台运行。
 
-具体安装指导见：
+通过与 IFTTT 进行联动，目前支持Yeelight智能灯具控制。
 
-自制简易中文版安装教程请见：
+### 三、Home Assistant & Homebridge
+智能家居系统的搭建详见本人于『少数派』发布的系列教程：https://sspai.com/post/38849
 
-GA可与IFTTT进行联动，目前支持Yeelight智能灯具控制。
+配合魔镜 iFrame 模块及触摸屏支持，可实现动态展示及操控。
 
-### 三、Home Assistant&Homebridge
-官方网站：
-GitHub：
-
-本人于少数派发布的完整教程：https://sspai.com/post/38849
-
-
-配合魔镜iFrame模块及触摸屏支持，可实现在镜子上操作家居。
-
-**注：Home Assistant 本身是一个非常强大的平台，如果你具有开发能力，你会发现HASS和MagicMirror很多时候可以实现相同的功能，以至于只需在浏览器中打开HASS首页即可。但本篇教程偏重于后者，并尝试整合2个系统，取舍协调在于你自己。**
+**注：Home Assistant 本身是一个非常强大的平台，如果你具有开发能力，你会发现 HA 和 Magic Mirror很多时候可以实现相同的功能，取舍协调在于你自己。**
 
 ### 四、MagicMirror
 Github: https://github.com/MichMich/MagicMirror
+
 MM是一个模块化高度集成的魔镜项目，已经运营数年。客制化程度非常高。
 
-具体教程见另一文件。
-
-
 ### 五、文件清单：
-.css 黑色背景的Homeassistant界面，以配合魔镜整体环境。
 
 
 
