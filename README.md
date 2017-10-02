@@ -44,9 +44,6 @@
 **注：Home Assistant 本身是一个非常强大的平台，如果你具有开发能力，你会发现 HA 和 Magic Mirror很多时候可以实现相同的功能，取舍协调在于你自己。**
 
 ### 四、MagicMirror
-Github: https://github.com/MichMich/MagicMirror
-
-MM是一个模块化高度集成的魔镜项目，已经运营数年。客制化程度非常高。
 
 ### 五、文件清单：
 
